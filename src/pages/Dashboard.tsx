@@ -1,310 +1,257 @@
-// ================= IMPORTAÇÃO DE ÍCONES =================
-// Ícones usados nos cards de estatísticas do dashboard
-import {CalendarDays, Users, Stethoscope, DollarSign, Clock, XCircle, TrendingUp, ArrowUpRight,
+import { useEffect, useMemo, useState } from "react";
+import {
+  ArrowUpRight,
+  CalendarDays,
+  Check,
+  Clock,
+  Stethoscope,
+  TrendingUp,
+  UserRoundPlus,
+  XCircle,
 } from "lucide-react";
-
-  
-// ================= IMPORTAÇÃO DOS COMPONENTES DE GRÁFICOS =================
-// Biblioteca usada para criar gráficos no React
-import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell,
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
+import { apiUrl } from "../lib/api";
+import { useNavigate } from "react-router-dom";
 
+type DashboardApi = {
+  stats?: {
+    consultasHoje?: number;
+    medicosAtendendo?: number;
+    pacientesAgendados?: number;
+    pendentes?: number;
+    canceladas?: number;
+    concluidas?: number;
+  };
+  monthlyConsultations?: { month: string; consultas: number }[];
+  todayStatus?: { name: string; value: number; color: string }[];
+  todayAppointments?: {
+    time: string;
+    patient: string;
+    doctor: string;
+    specialty: string;
+  }[];
+};
 
-// ================= DADOS DAS ESTATÍSTICAS =================
-// Esses dados futuramente devem vir do BACKEND
-// Exemplo: número de consultas, pacientes etc
-
-const stats = [
-  { label: "Consultas Hoje", value: "0", icon: CalendarDays, color: "text-blue-600", bg: "bg-blue-100" },
-  { label: "Médicos Atendendo", value: "0", icon: Stethoscope, color: "text-purple-600", bg: "bg-purple-100" },
-  { label: "Pacientes Agendados", value: "0", icon: Users, color: "text-cyan-600", bg: "bg-cyan-100" },
-  { label: "Receita do Dia", value: "R$ 0", icon: DollarSign, color: "text-green-600", bg: "bg-green-100" },
-  { label: "Pendentes", value: "0", icon: Clock, color: "text-yellow-600", bg: "bg-yellow-100" },
-  { label: "Canceladas", value: "0", icon: XCircle, color: "text-red-600", bg: "bg-red-100" },
+const fallbackMonthly = [
+  { month: "jan.", consultas: 0 },
+  { month: "fev.", consultas: 0 },
+  { month: "mar.", consultas: 0 },
+  { month: "abr.", consultas: 0 },
 ];
 
-
-// ================= DADOS DO GRÁFICO DE CONSULTAS =================
-// Representa quantidade de consultas por mês
-// Inicialmente zerado até receber dados do backend
-
-const monthlyData = [
-  { month: "Jan", consultas: 0 },
-  { month: "Fev", consultas: 0 },
-  { month: "Mar", consultas: 0 },
-  { month: "Abr", consultas: 0 },
-];
-
-
-// ================= DADOS DO GRÁFICO DE STATUS =================
-// Status das consultas do dia
-
-const statusData = [
+const fallbackStatus = [
   { name: "Confirmadas", value: 0, color: "#22c55e" },
   { name: "Pendentes", value: 0, color: "#f59e0b" },
   { name: "Canceladas", value: 0, color: "#ef4444" },
+  { name: "Concluídas", value: 0, color: "#8b90f8" },
 ];
 
-
-// ================= TABELA DE CONSULTAS =================
-// Lista de consultas recentes
-// Começa vazia até receber dados do backend
-
-const recentAppointments: any[] = [];
-
-
-// ================= COMPONENTE PRINCIPAL DO DASHBOARD =================
-
 export default function Dashboard() {
+  const [dashboard, setDashboard] = useState<DashboardApi>({});
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadDashboard = async () => {
+      try {
+        const response = await fetch(apiUrl("/api/dashboard"));
+        if (!response.ok) return;
+        const json = await response.json();
+        setDashboard(json.data ?? {});
+      } catch {
+        
+      }
+    };
+    loadDashboard();
+  }, []);
+
+  const monthlyData = dashboard.monthlyConsultations?.length
+    ? dashboard.monthlyConsultations.map((m) => ({
+        month: (m.month || "").toLowerCase(),
+        consultas: Number(m.consultas || 0),
+      }))
+    : fallbackMonthly;
+
+  const statusData = dashboard.todayStatus?.length ? dashboard.todayStatus : fallbackStatus;
+  const totalStatus = statusData.reduce((acc, item) => acc + (item.value || 0), 0);
+
+  const growth = useMemo(() => {
+    if (monthlyData.length < 2) return 0;
+    const prev = monthlyData[monthlyData.length - 2]?.consultas ?? 0;
+    const current = monthlyData[monthlyData.length - 1]?.consultas ?? 0;
+    if (prev === 0) return current > 0 ? 100 : 0;
+    return Math.round(((current - prev) / prev) * 100);
+  }, [monthlyData]);
+
+  const stats = [
+    {
+      label: "Consultas Hoje",
+      value: dashboard.stats?.consultasHoje ?? 0,
+      icon: CalendarDays,
+      color: "text-sky-600",
+      bg: "bg-sky-100",
+    },
+    {
+      label: "Médicos Atendendo",
+      value: dashboard.stats?.medicosAtendendo ?? 0,
+      icon: Stethoscope,
+      color: "text-violet-600",
+      bg: "bg-violet-100",
+    },
+    {
+      label: "Pacientes Agendados",
+      value: dashboard.stats?.pacientesAgendados ?? 0,
+      icon: UserRoundPlus,
+      color: "text-cyan-600",
+      bg: "bg-cyan-100",
+    },
+    {
+      label: "Pendentes",
+      value: dashboard.stats?.pendentes ?? 0,
+      icon: Clock,
+      color: "text-amber-600",
+      bg: "bg-amber-100",
+    },
+    {
+      label: "Canceladas",
+      value: dashboard.stats?.canceladas ?? 0,
+      icon: XCircle,
+      color: "text-rose-600",
+      bg: "bg-rose-100",
+    },
+    {
+      label: "Concluídas",
+      value: dashboard.stats?.concluidas ?? 0,
+      icon: Check,
+      color: "text-emerald-600",
+      bg: "bg-emerald-100",
+    },
+  ];
+
+  const rows = dashboard.todayAppointments ?? [];
 
   return (
-
-    // Container principal da página
-    // space-y cria espaçamento vertical entre os elementos
-    <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
-
-
-      {/* ================= HEADER DO DASHBOARD ================= */}
-
+    <div className="space-y-6 bg-[#f4f5f7] min-h-full">
       <div>
-        {/* Título principal */}
-        <h1 className="text-2xl font-bold text-gray-900">
-          Dashboard
-        </h1>
-
-        {/* Subtítulo */}
-        <p className="text-sm text-gray-500">
-          Visão geral do sistema
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-sm text-gray-500">Visão geral do sistema</p>
       </div>
 
-
-
-      {/* ================= CARDS DE ESTATÍSTICAS ================= */}
-
-      {/* Grid responsivo com os indicadores do sistema */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
         {stats.map((s) => (
-
-          // Card individual de estatística
-          <div
-            key={s.label}
-            className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition"
-          >
-
-            {/* Ícone da estatística */}
-            <div className={`w-9 h-9 rounded-lg ${s.bg} flex items-center justify-center mb-3`}>
-              <s.icon className={`w-5 h-5 ${s.color}`} />
+          <div key={s.label} className="stat-card">
+            <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center mb-2`}>
+              <s.icon className={`w-4 h-4 ${s.color}`} />
             </div>
-
-            {/* Valor da estatística */}
-            <p className="text-2xl font-bold text-gray-900">
-              {s.value}
-            </p>
-
-            {/* Nome da estatística */}
-            <p className="text-xs text-gray-500 mt-1">
-              {s.label}
-            </p>
-
+            <p className="text-4xl leading-none font-bold text-gray-900">{s.value}</p>
+            <p className="text-xs text-gray-500 mt-1.5">{s.label}</p>
           </div>
-
         ))}
-
       </div>
-
-
-
-      {/* ================= GRÁFICOS ================= */}
 
       <div className="grid lg:grid-cols-3 gap-4">
-
-
-        {/* ================= GRÁFICO DE BARRAS ================= */}
-        {/* Mostra quantidade de consultas por mês */}
-
-        <div className="lg:col-span-2 bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-
-          {/* Cabeçalho do gráfico */}
-          <div className="flex items-center justify-between mb-4">
-
+        <div className="lg:col-span-2 stat-card p-5">
+          <div className="flex items-center justify-between mb-3">
             <div>
-              <h3 className="text-sm font-semibold text-gray-900">
-                Consultas Mensais
-              </h3>
-
-              <p className="text-xs text-gray-500">
-                Últimos meses
-              </p>
+              <h3 className="text-sm font-semibold text-gray-900">Consultas Mensais</h3>
+              <p className="text-xs text-gray-500">Últimos meses</p>
             </div>
-
-            {/* Indicador de crescimento */}
-            <div className="flex items-center gap-1 text-xs text-green-600 font-medium">
+            <div className="flex items-center gap-1 text-xs text-emerald-600 font-medium">
               <TrendingUp className="w-3.5 h-3.5" />
-              0%
+              {growth >= 0 ? `+${growth}%` : `${growth}%`}
             </div>
-
           </div>
-
-
-          {/* Container responsivo do gráfico */}
-          <ResponsiveContainer width="100%" height={240}>
-
+          <ResponsiveContainer width="100%" height={220}>
             <BarChart data={monthlyData}>
-
-              {/* Linhas do fundo do gráfico */}
-              <CartesianGrid strokeDasharray="3 3" />
-
-              {/* Eixo horizontal (meses) */}
-              <XAxis dataKey="month" />
-
-              {/* Eixo vertical */}
-              <YAxis />
-
-              {/* Tooltip ao passar o mouse */}
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="month" tick={{ fill: "#6b7280", fontSize: 12 }} />
+              <YAxis tick={{ fill: "#6b7280", fontSize: 12 }} />
               <Tooltip />
-
-              {/* Barras do gráfico */}
-              <Bar
-                dataKey="consultas"
-                fill="#0284c7"
-                radius={[6, 6, 0, 0]}
-              />
-
+              <Bar dataKey="consultas" fill="#0ea5e9" radius={[6, 6, 0, 0]} />
             </BarChart>
-
           </ResponsiveContainer>
-
         </div>
 
-
-
-        {/* ================= GRÁFICO DE PIZZA ================= */}
-        {/* Mostra status das consultas */}
-
-        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-
-          <h3 className="text-sm font-semibold text-gray-900 mb-4">
-            Status de Hoje
-          </h3>
-
-          <ResponsiveContainer width="100%" height={180}>
-
+        <div className="stat-card p-5">
+          <h3 className="text-sm font-semibold text-gray-900 mb-3">Status de Hoje</h3>
+          <ResponsiveContainer width="100%" height={170}>
             <PieChart>
-
-              <Pie
-                data={statusData}
-                dataKey="value"
-                innerRadius={50}
-                outerRadius={75}
-              >
-
-                {/* Cores das fatias */}
+              <Pie data={statusData} dataKey="value" innerRadius={44} outerRadius={66}>
                 {statusData.map((entry, i) => (
                   <Cell key={i} fill={entry.color} />
                 ))}
-
               </Pie>
-
             </PieChart>
-
           </ResponsiveContainer>
-
+          {totalStatus === 0 && (
+            <p className="text-xs text-gray-400 text-center -mt-7 mb-3">Nenhuma consulta hoje</p>
+          )}
+          <div className="space-y-1.5 mt-2">
+            {statusData.map((s) => (
+              <div key={s.name} className="flex items-center justify-between text-xs">
+                <span className="text-gray-600 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full" style={{ background: s.color }} />
+                  {s.name}
+                </span>
+                <span className="text-gray-900 font-semibold">{s.value}</span>
+              </div>
+            ))}
+          </div>
         </div>
-
       </div>
 
-
-
-      {/* ================= TABELA DE CONSULTAS ================= */}
-
-      <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-
-        {/* Cabeçalho da tabela */}
-        <div className="flex items-center justify-between mb-4">
-
-          <h3 className="text-sm font-semibold text-gray-900">
-            Consultas de Hoje
-          </h3>
-
-          {/* Botão para acessar todas as consultas */}
-          <button className="text-xs text-blue-600 font-medium flex items-center gap-1 hover:underline">
+      <div className="stat-card p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-gray-900">Consultas de Hoje</h3>
+          <button
+            className="text-xs text-[#49b594] font-semibold flex items-center gap-1 hover:underline"
+            onClick={() => navigate("/agendamentos")}
+          >
             Ver todas
             <ArrowUpRight className="w-3 h-3" />
           </button>
-
         </div>
-
-
-
-        {/* Container com scroll horizontal */}
         <div className="overflow-x-auto">
-
           <table className="w-full text-sm">
-
-
-            {/* Cabeçalho da tabela */}
             <thead>
               <tr className="border-b border-gray-200">
-
-                <th className="text-left py-2 text-xs font-medium text-gray-500">
-                  Horário
-                </th>
-
-                <th className="text-left py-2 text-xs font-medium text-gray-500">
-                  Paciente
-                </th>
-
-                <th className="text-left py-2 text-xs font-medium text-gray-500">
-                  Médico
-                </th>
-
-                <th className="text-left py-2 text-xs font-medium text-gray-500">
-                  Especialidade
-                </th>
-
+                <th className="text-left py-2 text-xs font-semibold text-gray-500">Horário</th>
+                <th className="text-left py-2 text-xs font-semibold text-gray-500">Paciente</th>
+                <th className="text-left py-2 text-xs font-semibold text-gray-500">Médico</th>
+                <th className="text-left py-2 text-xs font-semibold text-gray-500">Especialidade</th>
               </tr>
             </thead>
-
-
-
-            {/* Corpo da tabela */}
             <tbody>
-
-              {/* Lista de consultas */}
-              {recentAppointments.map((a, i) => (
-
-                <tr key={i} className="border-b border-gray-100">
-
-                  <td className="py-2.5 font-medium text-gray-900">
-                    {a.time}
+              {rows.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="py-8 text-center text-xs text-gray-400">
+                    Nenhuma consulta para hoje.
                   </td>
-
-                  <td className="py-2.5">
-                    {a.patient}
-                  </td>
-
-                  <td className="py-2.5 text-gray-500">
-                    {a.doctor}
-                  </td>
-
-                  <td className="py-2.5 text-gray-500">
-                    {a.specialty}
-                  </td>
-
                 </tr>
-
-              ))}
-
+              ) : (
+                rows.map((a, i) => (
+                  <tr key={`${a.time}-${a.patient}-${i}`} className="border-b border-gray-100">
+                    <td className="py-2.5 font-medium text-gray-900">{a.time}</td>
+                    <td className="py-2.5 text-gray-700">{a.patient}</td>
+                    <td className="py-2.5 text-gray-600">{a.doctor}</td>
+                    <td className="py-2.5 text-gray-600">{a.specialty}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
-
           </table>
-
         </div>
-
       </div>
-
     </div>
   );
 }
