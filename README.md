@@ -1,73 +1,54 @@
-# React + TypeScript + Vite
+🏥 ClinicaApp - Sistema de Gestão Médica
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ <h3>Sistema completo para gerenciamento de clínicas médicas, desenvolvido com foco em organização, produtividade e controle de atendimentos.</h3>
+ 
+<br>
 
-Currently, two official plugins are available:
+ <h2>Sobre o Projeto</h2>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+ <p>
+   O ClinicaApp é uma aplicação voltada para administração de clínicas, permitindo o controle de pacientes, médicos, consultas e prontuários de forma centralizada.
+ </p>
+ <p>
+   O sistema oferece uma interface intuitiva com dashboard interativo, facilitando a visualização de dados importantes em tempo real.
+ </p>
+  <br>
 
-## React Compiler
+  <h2>Funcionalidades</h2>
+   <ul>
+      <li>Cadastro de pacientes</li>
+      <li>Cadastro de médicos</li>
+      <li>Agendamento de consultas</li>
+      <li>Controle de consultas (pendentes, concluídas, canceladas)</li>
+      <li>Dashboard com métricas em tempo real</li>
+      <li>Gerenciamento de prontuários médicos</li>
+   </ul>
+  <br>
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+  <h2>Tecnologias Utilizadas para o Front-End</h2>
+  <ul>
+    <li>React.JS</li>
+    <li>Vite</li>
+    <li>Tailwindcss</li>
+    <li>TypeScript</li>
+  </ul>
+  <br>
 
-## Expanding the ESLint configuration
+  <h2>Dashboard</h2>
+  <img width="1918" height="865" alt="Image" src="https://github.com/user-attachments/assets/6f9e098f-c318-4519-a9ff-992e5d04bc0c" />
+  <br>
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+  <h2>Pacientes</h2>
+  <img width="1918" height="862" alt="Image" src="https://github.com/user-attachments/assets/bedf13cf-ee34-4403-b407-5e0900894fac" />
+  <br>
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+  <h2>Médicos</h2>
+  <img width="1912" height="876" alt="Image" src="https://github.com/user-attachments/assets/b6b5a05d-6202-428f-a43b-ee24703e09f9" />
+  <br>
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+  <h2>Agendamento</h2>
+  <img width="1918" height="866" alt="Image" src="https://github.com/user-attachments/assets/b8df1682-472c-4d65-8211-9d75a023ada9" />
+  <br>
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+  <h2>Prontuário</h2>
+  <img width="1918" height="871" alt="Image" src="https://github.com/user-attachments/assets/fa64de97-55f5-43cb-aad3-41e1e276a1e2" />
