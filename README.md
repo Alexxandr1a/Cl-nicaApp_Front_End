@@ -7,10 +7,13 @@
  <h2>Sobre o Projeto</h2>
 
  <p>
-   O ClinicaApp é uma aplicação voltada para administração de clínicas, permitindo o controle de pacientes, médicos, consultas e prontuários de forma centralizada.
+O ClinicaApp é uma aplicação completa para gerenciamento de clínicas médicas, desenvolvida com foco em eficiência, organização e usabilidade.
  </p>
  <p>
-   O sistema oferece uma interface intuitiva com dashboard interativo, facilitando a visualização de dados importantes em tempo real.
+ A plataforma centraliza as principais operações do dia a dia de uma clínica, permitindo o controle de pacientes, médicos, consultas e prontuários de forma prática e intuitiva.
+ </p>
+ <p>
+  Além disso, conta com um dashboard interativo, que facilita a visualização de métricas e informações importantes em tempo real, auxiliando na tomada de decisões.
  </p>
   <br>
 
@@ -26,11 +29,32 @@
   <br>
 
   <h2>Tecnologias Utilizadas para o Front-End</h2>
+  <h4>Front-End</h4>
   <ul>
     <li>React.JS</li>
     <li>Vite</li>
     <li>Tailwindcss</li>
     <li>TypeScript</li>
+  </ul>
+  <br>
+
+  <h2>Interface do Sistema</h2>
+  <ul>
+   <li>Dashboard</li>
+   <li>Pacientes</li>
+   <li>Médicos</li>
+   <li>Agendamento</li>
+   <li>Prontuário</li>
+  </ul>
+  <br>
+
+  <h2>Objetivo</h2>
+  <ul>
+   <li>Desenvolvimento de interfaces modernas</li>
+   <li>Organização de sistemas complexos</li>
+   <li>Médicos</li>
+   <li>Boas práticas com React e TypeScript</li>
+   <li>Criação de aplicações voltadas para problemas reais</li>
   </ul>
   <br>
 
