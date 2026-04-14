@@ -1,4 +1,4 @@
-🏥 ClinicaApp - Sistema de Gestão Médica
+<h1>🏥 ClinicaApp - Sistema de Gestão Médica</h1>
 
  <h3>Sistema completo para gerenciamento de clínicas médicas, desenvolvido com foco em organização, produtividade e controle de atendimentos.</h3>
  
