@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Search, Plus, Phone, Mail, ChevronRight } from "lucide-react";
 
-// componentes UI
+
 import { Button } from "../Components/ui/button";
 import { Input } from "../Components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../Components/ui/dialog";
@@ -10,11 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Textarea } from "../Components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../Components/ui/tabs";
 
-// Sonner
 import { toast } from "sonner";
 import { apiUrl } from "../lib/api";
 
-// Estrutura do paciente
+
 interface Patient {
   id: string;
   name: string;
@@ -197,7 +196,7 @@ export default function Patients() {
   const updateField = (field: string, value: string) =>
     setForm((f) => ({ ...f, [field]: value }));
 
-  const handleDelete = async (id: string) => { // id como string, pois vem do backend
+  const handleDelete = async (id: string) => {
     try {
       const response = await fetch(apiUrl(`/api/patients/${id}`), {
         method: "DELETE",
@@ -206,7 +205,7 @@ export default function Patients() {
         }
       });
 
-      if (response.status === 204) { // sucesso
+      if (response.status === 204) { 
         toast.success("Paciente removido com sucesso.");
         setDetailsOpen(false);
         await fetchPatients(); 
