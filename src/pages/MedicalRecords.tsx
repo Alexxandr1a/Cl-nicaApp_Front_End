@@ -66,7 +66,7 @@ const emptyRecord: Omit<MedicalRecord, "id"> = {
   type: "CONSULTA",
 };
 
-// Retorna a data de hoje no formato YYYY-MM-DD 
+
 function getTodayDateString(): string {
   const now = new Date();
   const year = now.getFullYear();
@@ -188,7 +188,7 @@ export default function MedicalRecords() {
         setRecordAttachments((prev) => ({ ...prev, [recordId]: mapped }));
       } catch (e) {
         console.error(e);
-        // não trava o modal se falhar
+        
         setRecordAttachments((prev) => ({ ...prev, [recordId]: [] }));
       } finally {
         setLoadingAttachments(false);
@@ -279,7 +279,7 @@ export default function MedicalRecords() {
         return;
       }
 
-      // Regra de negócio: data não pode ser anterior ao dia atual
+    
       if (form.date < todayStr) {
         toast.error("Não é possível registrar um prontuário em data anterior ao dia de hoje.");
         return;
@@ -451,7 +451,7 @@ export default function MedicalRecords() {
         ))}
       </div>
 
-      {/* View Record Dialog */}
+     
       <Dialog
         open={!!viewRecord}
         onOpenChange={(open) => {
@@ -566,7 +566,7 @@ export default function MedicalRecords() {
         </DialogContent>
       </Dialog>
 
-      {/* New Record Dialog */}
+    
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="!max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Novo Registro de Prontuário</DialogTitle></DialogHeader>
